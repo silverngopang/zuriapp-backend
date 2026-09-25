@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "lint": "eslint .",
+    "lint": "eslint . --format compact",
     "test": "jest --forceExit"
   },
   "dependencies": {
@@ -15,7 +15,9 @@
     "express": "^4.19.2"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "eslint": "^10.11.0",
+    "eslint-formatter-compact": "^9.0.1",
     "jest": "^30.5.2",
     "nodemon": "^3.1.4",
     "supertest": "^7.3.0"
