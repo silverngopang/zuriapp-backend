@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "lint": "eslint .",
+    "test": "jest --forceExit"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -13,6 +15,12 @@
     "express": "^4.19.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "eslint": "^10.11.0",
+    "jest": "^30.5.2",
+    "nodemon": "^3.1.4",
+    "supertest": "^7.3.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }
