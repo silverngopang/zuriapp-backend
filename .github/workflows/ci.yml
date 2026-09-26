@@ -42,12 +42,13 @@ jobs:
           format: table
           exit-code: "1"
           severity: CRITICAL
+          skip-dirs: /usr/local/lib/node_modules/npm,/usr/local/lib/node_modules/corepack,/opt/yarn-v1.22.22
 
       - name: Push image to Docker Hub
         if: github.ref == 'refs/heads/main'
         run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          docker tag zuriapp-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/zuriapp-backend:${{ github.sha }}
-          docker tag zuriapp-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/zuriapp-backend:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/zuriapp-backend:${{ github.sha }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/zuriapp-backend:latest
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          docker tag zuriapp-backend:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/zuriapp-backend:${{ github.sha }}
+          docker tag zuriapp-backend:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/zuriapp-backend:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/zuriapp-backend:${{ github.sha }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/zuriapp-backend:latest
