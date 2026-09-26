@@ -1,0 +1,54 @@
+name: Backend CI
+
+on:
+  push:
+    branches: ["main", "feature/**"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+        env:
+          API_SECRET_KEY: test-secret
+          STORE_NAME: Zuri Market
+
+      - name: Build Docker image
+        run: docker build -t zuriapp-backend:${{ github.sha }} .
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: zuriapp-backend:${{ github.sha }}
+          format: table
+          exit-code: "1"
+          severity: CRITICAL
+          skip-dirs: /usr/local/lib/node_modules/npm,/usr/local/lib/node_modules/corepack,/opt/yarn-v1.22.22
+
+      - name: Push image to Docker Hub
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          docker tag zuriapp-backend:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/zuriapp-backend:${{ github.sha }}
+          docker tag zuriapp-backend:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/zuriapp-backend:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/zuriapp-backend:${{ github.sha }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/zuriapp-backend:latest
